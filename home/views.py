@@ -16,7 +16,7 @@ def home(request):
         'pending_requests': ChickRequest.objects.filter(status='pending').count(),
         'total_stock': sum(stock.quantity for stock in ChickStock.objects.all()),
     }
-    return render(request, 'home/home.html', context)
+    return render(request, 'home.html', context)
 
 def register_farmer(request):
     """Register new farmer"""
@@ -37,7 +37,7 @@ def register_farmer(request):
         user_form = UserRegistrationForm()
         profile_form = FarmerProfileForm()
     
-    return render(request, 'home/register_farmer.html', {
+    return render(request, 'register.html', {
         'user_form': user_form,
         'profile_form': profile_form
     })
@@ -112,7 +112,7 @@ def farmer_dashboard(request):
             'can_request': can_request,
             'next_request_date': next_request_date,
         }
-        return render(request, 'home/farmer_dashboard.html', context)
+        return render(request, 'farmers_dashboard.html', context)
             
     except UserProfile.DoesNotExist:
         messages.error(request, 'User profile not found. Please complete your registration.')
@@ -141,7 +141,7 @@ def manager_dashboard(request):
             'stock_items': stock_items,
             'recent_approvals': recent_approvals,
         }
-        return render(request, 'home/manager_dashboard.html', context)
+        return render(request, 'manager_dashboard.html', context)
         
     except UserProfile.DoesNotExist:
         messages.error(request, 'User profile not found.')
@@ -169,7 +169,7 @@ def sales_dashboard(request):
             'my_sales': my_sales,
             'total_revenue': total_revenue,
         }
-        return render(request, 'home/sales_dashboard.html', context)
+        return render(request, 'sales_dashboard.html', context)
         
     except UserProfile.DoesNotExist:
         messages.error(request, 'User profile not found.')
@@ -205,7 +205,7 @@ def make_request(request):
     else:
         form = ChickRequestForm()
     
-    return render(request, 'home/make_request.html', {'form': form})
+    return render(request, 'make_request.html', {'form': form})
 
 @login_required
 def edit_profile(request):
@@ -221,7 +221,7 @@ def edit_profile(request):
     else:
         profile_form = FarmerProfileForm(instance=user_profile)
     
-    return render(request, 'home/edit_profile.html', {'profile_form': profile_form})
+    return render(request, 'edit_profile.html', {'profile_form': profile_form})
 
 @login_required
 def manage_stock(request):
@@ -245,7 +245,7 @@ def manage_stock(request):
     
     stock_items = ChickStock.objects.all().order_by('-date_added')
     
-    return render(request, 'home/manage_stock.html', {
+    return render(request, 'manage_stock.html', {
         'form': form,
         'stock_items': stock_items
     })

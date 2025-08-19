@@ -1,0 +1,441 @@
+{% extends 'home/index.html' %}
+
+{% block title %}Sales Dashboard - Young4Chicks{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="welcome-section">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h2>Sales Dashboard</h2>
+            <p class="mb-0">Welcome, {{ user_profile.user.get_full_name }}! Process sales and track your revenue performance.</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-chart-line" style="font-size: 4rem; opacity: 0.7;"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="stats-row">
+    <div class="stats-box success">
+        <div class="stats-icon-large">
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+        <div class="stats-number">{{ approved_requests.count }}</div>
+        <div class="stats-label">Ready for Sale</div>
+        <div class="stats-description">Approved requests waiting</div>
+    </div>
+    
+    <div class="stats-box info">
+        <div class="stats-icon-large">
+            <i class="fas fa-handshake"></i>
+        </div>
+        <div class="stats-number">{{ my_sales.count }}</div>
+        <div class="stats-label">Completed Sales</div>
+        <div class="stats-description">Successful transactions</div>
+    </div>
+    
+    <div class="stats-box warning">
+        <div class="stats-icon-large">
+            <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <div class="stats-number">{{ total_revenue|floatformat:0 }}</div>
+        <div class="stats-label">Total Revenue</div>
+        <div class="stats-description">UGx earned from sales</div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="content-section">
+            <div class="section-header success-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cash-register me-2"></i>
+                        Ready for Sale
+                    </h5>
+                    {% if approved_requests.count > 0 %}
+                        <span class="badge bg-light text-dark">{{ approved_requests.count }} requests</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="section-body p-0">
+                {% if approved_requests %}
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Farmer</th>
+                                    <th>Chick Details</th>
+                                    <th>Quantity</th>
+                                    <th>Total Amount</th>
+                                    <th>Approved Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in approved_requests %}
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>{{ request.farmer.user.get_full_name }}</strong>
+                                            <br>
+                                            <span class="badge bg-{% if request.farmer_type == 'starter' %}success{% else %}primary{% endif %}">
+                                                {{ request.get_farmer_type_display }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-{% if request.chick_type == 'layer' %}egg{% else %}drumstick-bite{% endif %} me-1"></i>
+                                            {{ request.get_chick_type_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ request.quantity_requested }}</strong>
+                                        <br>
+                                        <small class="text-muted">chicks</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">UGx {% widthratio request.quantity_requested 1 1650 %}</strong>
+                                        <br>
+                                        <small class="text-muted">@ UGx 1,650 each</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ request.approval_date|date:"M d, Y" }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ request.approval_date|date:"g:i A" }}</small>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-success ajax-complete-sale-btn" data-request-id="{{ request.id }}">
+                                            <i class="fas fa-credit-card"></i>
+                                            Complete Sale
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <h5>All Sales Completed</h5>
+                        <p>No approved requests pending sale. All transactions have been processed.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="content-section">
+            <div class="section-header info-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>
+                    Recent Sales
+                </h5>
+            </div>
+            <div class="section-body">
+                {% if my_sales %}
+                    <div class="mb-3">
+                        {% for sale in my_sales %}
+                        <div class="info-section">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-user me-2 text-primary"></i>
+                                        {{ sale.request.farmer.user.get_full_name }}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ sale.sale_date|date:"M d, Y" }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-success">UGx {{ sale.total_amount }}</span>
+                            </div>
+                            <div class="small text-muted">
+                                <i class="fas fa-{% if sale.request.chick_type == 'layer' %}egg{% else %}drumstick-bite{% endif %} me-1"></i>
+                                {{ sale.request.quantity_requested }} {{ sale.request.get_chick_type_display }}
+                                <br>
+                                <i class="fas fa-gift me-1"></i>
+                                Feed delivery: {{ sale.feeds_due_date|date:"M d, Y" }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-bar text-muted mb-3" style="font-size: 3rem;"></i>
+                        <h6 class="text-muted mb-2">No Sales Yet</h6>
+                        <p class="text-muted small mb-0">Complete your first sale to see transaction history</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Performance Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-trophy me-2"></i>
+                    Performance
+                </h5>
+            </div>
+            <div class="section-body">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="stats-icon" style="width: 40px; height: 40px; font-size: 1rem; margin: 0 auto 0.5rem auto; background: var(--success);">
+                                <i class="fas fa-target"></i>
+                            </div>
+                            <div class="fw-bold">{{ my_sales.count }}</div>
+                            <small class="text-muted">Sales This Month</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="stats-icon" style="width: 40px; height: 40px; font-size: 1rem; margin: 0 auto 0.5rem auto; background: var(--warning);">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="fw-bold">100%</div>
+                            <small class="text-muted">Success Rate</small>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-3">
+                <div class="d-grid">
+                    <button class="btn btn-outline-primary" onclick="viewDetailedReport()">
+                        <i class="fas fa-chart-line me-2"></i>
+                        View Detailed Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize sales dashboard with AJAX
+window.onload = function() {
+    console.log('Sales dashboard loaded successfully!');
+    initializeSalesDashboard();
+};
+
+// Initialize dashboard AJAX features
+function initializeSalesDashboard() {
+    // Start auto-refresh
+    startAutoRefresh();
+    
+    // Add event listeners for AJAX actions
+    addSalesAjaxEventListeners();
+}
+
+// Auto-refresh approved requests and stats
+function startAutoRefresh() {
+    setInterval(function() {
+        refreshDashboardStats();
+    }, 45000); // Every 45 seconds
+}
+
+// Add AJAX event listeners to complete sale buttons
+function addSalesAjaxEventListeners() {
+    var completeSaleButtons = document.querySelectorAll('.ajax-complete-sale-btn');
+    completeSaleButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            var requestId = this.getAttribute('data-request-id');
+            completeSaleAjax(requestId, this);
+        });
+    });
+}
+
+// Complete sale via AJAX
+function completeSaleAjax(requestId, buttonElement) {
+    // Confirm sale completion
+    if (!confirm('Complete sale for this request? This action cannot be undone.')) {
+        return;
+    }
+    
+    // Disable button and show loading
+    buttonElement.disabled = true;
+    buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    
+    ajaxPost('/ajax/complete-sale/' + requestId + '/', {}, function(error, response) {
+        if (error) {
+            showMessage('Error completing sale: ' + error, 'danger');
+            // Re-enable button
+            buttonElement.disabled = false;
+            buttonElement.innerHTML = '<i class="fas fa-credit-card"></i> Complete Sale';
+        } else {
+            if (response.success) {
+                // Update UI
+                updateSaleRowStatus(requestId, response.sale_amount);
+                showMessage(response.message, 'success');
+                
+                // Remove the row after 3 seconds
+                setTimeout(function() {
+                    removeSaleRow(requestId);
+                }, 3000);
+                
+                // Refresh stats
+                refreshDashboardStats();
+                
+                // Add to recent sales list
+                addToRecentSales(response);
+            } else {
+                showMessage(response.message, 'danger');
+                // Re-enable button
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = '<i class="fas fa-credit-card"></i> Complete Sale';
+            }
+        }
+    });
+}
+
+// Update sale row status
+function updateSaleRowStatus(requestId, saleAmount) {
+    var row = document.querySelector('[data-row-request-id="' + requestId + '"]');
+    if (row) {
+        var actionsCell = row.querySelector('td:last-child');
+        if (actionsCell) {
+            actionsCell.innerHTML = '<span class="badge bg-success"><i class="fas fa-check me-1"></i>Sale Completed - UGx ' + 
+                                   (saleAmount ? saleAmount.toLocaleString() : '0') + '</span>';
+        }
+    }
+}
+
+// Remove sale row from table
+function removeSaleRow(requestId) {
+    var row = document.querySelector('[data-row-request-id="' + requestId + '"]');
+    if (row) {
+        // Add fade out animation
+        row.style.transition = 'opacity 0.5s ease';
+        row.style.opacity = '0';
+        
+        setTimeout(function() {
+            row.remove();
+            
+            // Check if table is empty
+            var tbody = document.querySelector('.table tbody');
+            if (tbody && tbody.children.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fas fa-check-circle fa-2x text-success mb-2"></i><br>All sales completed!</td></tr>';
+            }
+        }, 500);
+    }
+}
+
+// Add to recent sales list
+function addToRecentSales(saleData) {
+    var recentSalesList = document.querySelector('.recent-sales-list');
+    if (recentSalesList && saleData.sale_amount) {
+        var newSaleDiv = document.createElement('div');
+        newSaleDiv.className = 'info-section';
+        newSaleDiv.innerHTML = 
+            '<div class="d-flex justify-content-between align-items-start mb-2">' +
+                '<div>' +
+                    '<h6 class="mb-1">' +
+                        '<i class="fas fa-user me-2 text-primary"></i>' +
+                        'Recent Sale' +
+                    '</h6>' +
+                    '<small class="text-success">UGx ' + saleData.sale_amount.toLocaleString() + '</small>' +
+                '</div>' +
+                '<small class="text-muted">Just now</small>' +
+            '</div>';
+        
+        // Insert at the top
+        recentSalesList.insertBefore(newSaleDiv, recentSalesList.firstChild);
+        
+        // Remove if more than 5 items
+        var items = recentSalesList.children;
+        if (items.length > 5) {
+            recentSalesList.removeChild(items[items.length - 1]);
+        }
+    }
+}
+
+// Refresh dashboard statistics
+function refreshDashboardStats() {
+    ajaxGet('/api/dashboard-stats/', function(error, data) {
+        if (!error && data) {
+            updateSalesStats(data);
+        }
+    });
+}
+
+// Update sales-specific statistics
+function updateSalesStats(data) {
+    if (data.ready_for_sale !== undefined) {
+        var element = document.querySelector('.stats-box.success .stats-number');
+        if (element) element.textContent = data.ready_for_sale;
+    }
+    
+    if (data.my_sales_count !== undefined) {
+        var element = document.querySelector('.stats-box.info .stats-number');
+        if (element) element.textContent = data.my_sales_count;
+    }
+    
+    if (data.my_total_revenue !== undefined) {
+        var element = document.querySelector('.stats-box.warning .stats-number');
+        if (element) element.textContent = data.my_total_revenue.toFixed(0);
+    }
+}
+
+// Mark as sold function (legacy support)
+function markAsSold(requestId) {
+    var button = document.querySelector('[data-request-id="' + requestId + '"]');
+    if (button) {
+        completeSaleAjax(requestId, button);
+    }
+}
+
+// View detailed report function  
+function viewDetailedReport() {
+    showMessage('Loading detailed sales report...', 'info');
+    
+    // Simulate loading detailed report
+    setTimeout(function() {
+        ajaxGet('/api/dashboard-stats/', function(error, data) {
+            if (!error && data) {
+                var reportMessage = 'Sales Report: ' + 
+                    data.my_sales_count + ' completed sales, ' +
+                    'UGx ' + (data.my_total_revenue || 0).toLocaleString() + ' total revenue';
+                showMessage(reportMessage, 'success');
+            } else {
+                showMessage('Detailed report feature coming soon!', 'warning');
+            }
+        });
+    }, 1500);
+}
+
+// Bulk complete sales
+function bulkCompleteSales() {
+    var checkboxes = document.querySelectorAll('input[name="sale_ids"]:checked');
+    
+    if (checkboxes.length === 0) {
+        showMessage('Please select at least one sale to complete', 'warning');
+        return;
+    }
+    
+    if (confirm('Complete ' + checkboxes.length + ' selected sales?')) {
+        var completed = 0;
+        var total = checkboxes.length;
+        
+        showMessage('Processing ' + total + ' sales...', 'info');
+        
+        checkboxes.forEach(function(cb) {
+            var requestId = cb.value;
+            var button = document.querySelector('[data-request-id="' + requestId + '"]');
+            
+            if (button) {
+                completeSaleAjax(requestId, button);
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

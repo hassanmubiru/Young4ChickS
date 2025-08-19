@@ -1,0 +1,164 @@
+{% extends 'home/index.html' %}
+
+{% block title %}Make Request - Young4Chicks{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="content-section">
+            <div class="section-header warning-header text-center">
+                <div class="text-white">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🐤</div>
+                    <h4 class="mb-1"><i class="fas fa-plus-circle"></i> Request Your Chicks</h4>
+                    <p class="mb-0 opacity-75">Fill out the form below to place your order</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="{{ form.chick_type.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-egg text-info"></i> Chick Type
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-egg"></i></span>
+                                {{ form.chick_type }}
+                            </div>
+                            {% if form.chick_type.errors %}
+                                <div class="text-danger mt-1">{{ form.chick_type.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted">Choose between local and exotic varieties</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.quantity_requested.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-sort-numeric-up text-primary"></i> Quantity
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-hashtag"></i></span>
+                                {{ form.quantity_requested }}
+                                <span class="input-group-text bg-light">chicks</span>
+                            </div>
+                            {% if form.quantity_requested.errors %}
+                                <div class="text-danger mt-1">{{ form.quantity_requested.errors }}</div>
+                            {% endif %}
+                            <div class="mt-2">
+                                <div class="alert alert-info py-2">
+                                    <small><i class="fas fa-info-circle"></i> <strong>Limits:</strong> Starter (max 100) • Returning (max 500)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="{{ form.farmer_type.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-user-tag text-success"></i> Farmer Type
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                                {{ form.farmer_type }}
+                            </div>
+                            {% if form.farmer_type.errors %}
+                                <div class="text-danger mt-1">{{ form.farmer_type.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-money-bill text-success"></i> Price Calculation
+                            </label>
+                            <div class="info-box" style="background: green; color: white;">
+                                <div class="p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Price per chick:</span>
+                                        <strong>UGx 1,650</strong>
+                                    </div>
+                                    <hr class="my-2 opacity-50">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Total amount:</span>
+                                        <strong id="totalAmount">UGx 0</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label fw-bold">
+                            <i class="fas fa-sticky-note text-warning"></i> Additional Notes (Optional)
+                        </label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="text-danger mt-1">{{ form.notes.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">Any special requirements or comments</small>
+                    </div>
+                    
+                    <div class="alert alert-primary border-0">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-lightbulb"></i> Important Reminders
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="mb-0 small">
+                                    <li>You can request chicks once every 4 months</li>
+                                    <li>Each farmer receives 2 bags of feed</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="mb-0 small">
+                                    <li>Feed payment due after 2 months</li>
+                                    <li>All chicks priced at UGx 1,650</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success btn-lg px-5 py-3 me-3">
+                            <i class="fas fa-paper-plane"></i> Submit Request
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg px-5 py-3">
+                            <i class="fas fa-arrow-left"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add Bootstrap classes to form fields
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (!input.classList.contains('form-control')) {
+                input.classList.add('form-control');
+            }
+            if (input.tagName === 'SELECT' || input.tagName === 'INPUT') {
+                input.style.border = 'none';
+                input.style.boxShadow = 'none';
+            }
+        });
+        
+        // Calculate total when quantity changes
+        const quantityInput = document.querySelector('#id_quantity_requested');
+        const totalAmountElement = document.querySelector('#totalAmount');
+        
+        function updateTotal() {
+            const quantity = parseInt(quantityInput.value) || 0;
+            const total = quantity * 1650;
+            totalAmountElement.textContent = `UGx ${total.toLocaleString()}`;
+        }
+        
+        if (quantityInput && totalAmountElement) {
+            quantityInput.addEventListener('input', updateTotal);
+            updateTotal(); // Initial calculation
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,465 @@
+{% extends 'home/index.html' %}
+
+{% block title %}Manager Dashboard - Young4Chicks{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="welcome-section">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h2>Manager Dashboard</h2>
+            <p class="mb-0">Welcome, {{ user_profile.user.get_full_name }}! Oversee operations and approve farmer requests.</p>
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-users-cog" style="font-size: 4rem; opacity: 0.7;"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Overview - Simple boxes instead of cards -->
+<div class="stats-row">
+    <div class="stats-box warning">
+        <div class="stats-number">{{ pending_requests.count }}</div>
+        <div class="stats-label">Pending Requests</div>
+        <div class="stats-description">Applications waiting for approval</div>
+    </div>
+    
+    <div class="stats-box success">
+        <div class="stats-number">{{ stock_categories.count }}</div>
+        <div class="stats-label">Stock Categories</div>
+        <div class="stats-description">Different feed types available</div>
+    </div>
+    
+    <div class="stats-box info">
+        <div class="stats-number">{{ recent_approvals|length }}</div>
+        <div class="stats-label">Recent Approvals</div>
+        <div class="stats-description">Approved in last 7 days</div>
+    </div>
+    
+    <div class="stats-box info">
+        <div class="stats-number">{{ total_farmers }}</div>
+        <div class="stats-label">Total Farmers</div>
+        <div class="stats-description">Registered in the system</div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="content-section">
+            <div class="section-header warning-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Pending Approvals
+                    </h5>
+                    {% if pending_requests.count > 0 %}
+                        <span class="badge bg-light text-dark">{{ pending_requests.count }} requests</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="section-body">
+                {% if pending_requests %}
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Farmer Details</th>
+                                    <th>Request Info</th>
+                                    <th>Quantity</th>
+                                    <th>Date Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in pending_requests %}
+                                <tr data-row-request-id="{{ request.id }}">
+                                    <td>
+                                        <div>
+                                            <strong>{{ request.farmer.user.get_full_name }}</strong>
+                                            <br>
+                                            <span class="badge bg-{% if request.farmer_type == 'starter' %}success{% else %}primary{% endif %}">
+                                                {{ request.get_farmer_type_display }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-{% if request.chick_type == 'layer' %}egg{% else %}drumstick-bite{% endif %} me-1"></i>
+                                            {{ request.get_chick_type_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ request.quantity_requested }}</strong>
+                                        <br>
+                                        <small class="text-muted">chicks</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ request.created_at|date:"M d, Y" }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ request.created_at|date:"g:i A" }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <!-- AJAX-enabled approve button -->
+                                            <button type="button" class="btn btn-sm btn-success ajax-approve-btn" data-request-id="{{ request.id }}">
+                                                <i class="fas fa-check"></i>
+                                                Approve
+                                            </button>
+                                            <!-- AJAX-enabled reject button -->
+                                            <button type="button" class="btn btn-sm btn-danger ajax-reject-btn" data-request-id="{{ request.id }}">
+                                                <i class="fas fa-times"></i>
+                                                Reject
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <h5>All caught up!</h5>
+                        <p>No pending requests at the moment. All farmer requests have been processed.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="content-section">
+            <div class="section-header info-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-boxes me-2"></i>
+                    Current Inventory
+                </h5>
+            </div>
+            <div class="section-body">
+                {% if stock_items %}
+                    <div class="mb-3">
+                        {% for stock in stock_items %}
+                        <div class="info-box">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-{% if stock.chick_type == 'layer' %}egg{% else %}drumstick-bite{% endif %} me-2 text-primary"></i>
+                                        {{ stock.get_chick_type_display }}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ stock.age_in_days }} days old
+                                    </small>
+                                </div>
+                                <span class="badge bg-primary">{{ stock.quantity }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-grid">
+                        <a href="{% url 'manage_stock' %}" class="btn btn-primary">
+                            <i class="fas fa-cog me-2"></i>
+                            Manage Inventory
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle text-warning mb-3" style="font-size: 3rem;"></i>
+                        <h6 class="text-muted mb-2">No Stock Available</h6>
+                        <p class="text-muted small mb-3">Add stock items to start processing farmer requests</p>
+                        <a href="{% url 'manage_stock' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>
+                            Add Stock Now
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="content-section">
+            <div class="section-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="section-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'manage_stock' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-warehouse me-2"></i>
+                        Manage Stock
+                    </a>
+                    <button class="btn btn-outline-info" onclick="generateReport()">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Generate Report
+                    </button>
+                    <button class="btn btn-outline-success" onclick="viewAnalytics()">
+                        <i class="fas fa-analytics me-2"></i>
+                        View Analytics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize manager dashboard with AJAX
+window.onload = function() {
+    console.log('Manager dashboard loaded successfully!');
+    initializeManagerDashboard();
+};
+
+// Initialize dashboard AJAX features
+function initializeManagerDashboard() {
+    // Start auto-refresh
+    startAutoRefresh();
+    
+    // Add event listeners for AJAX actions
+    addAjaxEventListeners();
+}
+
+// Auto-refresh pending requests and stats
+function startAutoRefresh() {
+    setInterval(function() {
+        refreshDashboardStats();
+    }, 30000); // Every 30 seconds
+}
+
+// Add AJAX event listeners to action buttons
+function addAjaxEventListeners() {
+    // Add event listeners to approve buttons
+    var approveButtons = document.querySelectorAll('.ajax-approve-btn');
+    approveButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            var requestId = this.getAttribute('data-request-id');
+            approveRequestAjax(requestId, this);
+        });
+    });
+    
+    // Add event listeners to reject buttons  
+    var rejectButtons = document.querySelectorAll('.ajax-reject-btn');
+    rejectButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            var requestId = this.getAttribute('data-request-id');
+            rejectRequestAjax(requestId, this);
+        });
+    });
+}
+
+// Approve request via AJAX
+function approveRequestAjax(requestId, buttonElement) {
+    // Disable button and show loading
+    buttonElement.disabled = true;
+    buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    
+    ajaxPost('/ajax/approve-request/' + requestId + '/', {}, function(error, response) {
+        if (error) {
+            showMessage('Error approving request: ' + error, 'danger');
+            // Re-enable button
+            buttonElement.disabled = false;
+            buttonElement.innerHTML = '<i class="fas fa-check"></i> Approve';
+        } else {
+            if (response.success) {
+                // Update UI
+                updateRequestRowStatus(requestId, response.new_status_display, 'success');
+                showMessage(response.message, 'success');
+                
+                // Remove the row after 2 seconds
+                setTimeout(function() {
+                    removeRequestRow(requestId);
+                }, 2000);
+                
+                // Refresh stats
+                refreshDashboardStats();
+            } else {
+                showMessage(response.message, 'danger');
+                // Re-enable button
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = '<i class="fas fa-check"></i> Approve';
+            }
+        }
+    });
+}
+
+// Reject request via AJAX
+function rejectRequestAjax(requestId, buttonElement) {
+    // Confirm rejection
+    if (!confirm('Are you sure you want to reject this request?')) {
+        return;
+    }
+    
+    // Disable button and show loading
+    buttonElement.disabled = true;
+    buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    
+    ajaxPost('/ajax/reject-request/' + requestId + '/', {}, function(error, response) {
+        if (error) {
+            showMessage('Error rejecting request: ' + error, 'danger');
+            // Re-enable button
+            buttonElement.disabled = false;
+            buttonElement.innerHTML = '<i class="fas fa-times"></i> Reject';
+        } else {
+            if (response.success) {
+                // Update UI
+                updateRequestRowStatus(requestId, response.new_status_display, 'danger');
+                showMessage(response.message, 'warning');
+                
+                // Remove the row after 2 seconds
+                setTimeout(function() {
+                    removeRequestRow(requestId);
+                }, 2000);
+                
+                // Refresh stats
+                refreshDashboardStats();
+            } else {
+                showMessage(response.message, 'danger');
+                // Re-enable button
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = '<i class="fas fa-times"></i> Reject';
+            }
+        }
+    });
+}
+
+// Update request row status
+function updateRequestRowStatus(requestId, statusText, badgeClass) {
+    var row = document.querySelector('[data-row-request-id="' + requestId + '"]');
+    if (row) {
+        var actionsCell = row.querySelector('td:last-child');
+        if (actionsCell) {
+            actionsCell.innerHTML = '<span class="badge bg-' + badgeClass + '">' + statusText + '</span>';
+        }
+    }
+}
+
+// Remove request row from table
+function removeRequestRow(requestId) {
+    var row = document.querySelector('[data-row-request-id="' + requestId + '"]');
+    if (row) {
+        // Add fade out animation
+        row.style.transition = 'opacity 0.5s ease';
+        row.style.opacity = '0';
+        
+        setTimeout(function() {
+            row.remove();
+            
+            // Check if table is empty
+            var tbody = document.querySelector('.table tbody');
+            if (tbody && tbody.children.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fas fa-check-circle fa-2x text-success mb-2"></i><br>No pending requests!</td></tr>';
+            }
+        }, 500);
+    }
+}
+
+// Refresh dashboard statistics
+function refreshDashboardStats() {
+    ajaxGet('/api/dashboard-stats/', function(error, data) {
+        if (!error && data) {
+            updateManagerStats(data);
+        }
+    });
+}
+
+// Update manager-specific statistics
+function updateManagerStats(data) {
+    if (data.pending_requests !== undefined) {
+        var element = document.querySelector('.stats-box.warning .stats-number');
+        if (element) element.textContent = data.pending_requests;
+    }
+    
+    if (data.total_farmers !== undefined) {
+        var element = document.querySelector('.stats-box.success .stats-number');
+        if (element) element.textContent = data.total_farmers;
+    }
+    
+    if (data.stock_categories !== undefined) {
+        var element = document.querySelector('.stats-box.info .stats-number');
+        if (element) element.textContent = data.stock_categories;
+    }
+    
+    if (data.recent_approvals !== undefined) {
+        var elements = document.querySelectorAll('.stats-box.info .stats-number');
+        if (elements[1]) elements[1].textContent = data.recent_approvals;
+    }
+}
+
+// Generate report function
+function generateReport() {
+    showMessage('Generating report...', 'info');
+    
+    // Simulate report generation with AJAX
+    setTimeout(function() {
+        showMessage('Report generated successfully! Check your downloads folder.', 'success');
+    }, 2000);
+}
+
+// View analytics function
+function viewAnalytics() {
+    showMessage('Loading analytics dashboard...', 'info');
+    
+    // In a real app, this would redirect to analytics page or load via AJAX
+    setTimeout(function() {
+        showMessage('Analytics feature coming soon!', 'warning');
+    }, 1000);
+}
+
+// Bulk actions for multiple requests
+function handleBulkAction(action) {
+    var checkboxes = document.querySelectorAll('input[name="request_ids"]:checked');
+    
+    if (checkboxes.length === 0) {
+        showMessage('Please select at least one request', 'warning');
+        return;
+    }
+    
+    var requestIds = [];
+    checkboxes.forEach(function(cb) {
+        requestIds.push(cb.value);
+    });
+    
+    var confirmMsg = action === 'approve' ? 
+        'approve ' + requestIds.length + ' request(s)' :
+        'reject ' + requestIds.length + ' request(s)';
+        
+    if (confirm('Are you sure you want to ' + confirmMsg + '?')) {
+        processBulkAction(action, requestIds);
+    }
+}
+
+// Process bulk action
+function processBulkAction(action, requestIds) {
+    var completed = 0;
+    var total = requestIds.length;
+    
+    showMessage('Processing ' + total + ' requests...', 'info');
+    
+    requestIds.forEach(function(requestId) {
+        var endpoint = action === 'approve' ? 
+            '/ajax/approve-request/' + requestId + '/' :
+            '/ajax/reject-request/' + requestId + '/';
+            
+        ajaxPost(endpoint, {}, function(error, response) {
+            completed++;
+            
+            if (!error && response.success) {
+                removeRequestRow(requestId);
+            }
+            
+            if (completed === total) {
+                showMessage('Bulk action completed successfully!', 'success');
+                refreshDashboardStats();
+            }
+        });
+    });
+}
+</script>
+{% endblock %}

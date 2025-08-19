@@ -1,0 +1,576 @@
+{% extends 'index.html' %}
+
+{% block title %}Farmer Dashboard - Xchicks{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="content-section">
+                <div class="section-header primary-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2>
+                                <i class="fas fa-seedling me-2"></i>
+                                Welcome, {{ user.get_full_name|default:user.username }}!
+                            </h2>
+                            <p class="mb-0">
+                                Manage your poultry requests and track your farming progress
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <div class="d-flex justify-content-center justify-content-md-end">
+                                <div class="text-center">
+                                    <h4 class="mb-0">{{ total_requests|default:0 }}</h4>
+                                    <small>Total Requests</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="stats-row">
+        <!-- Pending Requests -->
+        <div class="stats-box warning">
+            <div class="stats-content">
+                <div class="stats-icon-large">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stats-number">{{ pending_requests|default:0 }}</div>
+                <div class="stats-label">Pending Requests</div>
+            </div>
+        </div>
+
+        <!-- Approved Requests -->
+        <div class="stats-box success">
+            <div class="stats-content">
+                <div class="stats-icon-large">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stats-number">{{ approved_requests|default:0 }}</div>
+                <div class="stats-label">Approved</div>
+            </div>
+        </div>
+
+        <!-- Completed Sales -->
+        <div class="stats-box info">
+            <div class="stats-content">
+                <div class="stats-icon-large">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div class="stats-number">{{ completed_sales|default:0 }}</div>
+                <div class="stats-label">Completed Sales</div>
+            </div>
+        </div>
+
+        <!-- Total Chicks -->
+        <div class="stats-box info">
+            <div class="stats-content">
+                <div class="stats-icon-large">
+                    <i class="fas fa-egg"></i>
+                </div>
+                <div class="stats-number">{{ total_chicks|default:0 }}</div>
+                <div class="stats-label">Total Chicks</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row g-4">
+        <!-- Left Column - Request Management -->
+        <div class="col-lg-8">
+            
+            <!-- Dashboard Actions -->
+            <div class="mb-3">
+                <button id="refresh-requests" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-sync"></i> Refresh Status
+                </button>
+                <button onclick="refreshDashboardStats()" class="btn btn-outline-success btn-sm ms-2">
+                    <i class="fas fa-chart-line"></i> Update Stats
+                </button>
+            </div>
+            
+            <!-- New Request Section -->
+            <div class="content-section mb-4">
+                <div class="section-header primary-header">
+                    <h5>
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Request New Chicks
+                    </h5>
+                </div>
+                <div class="section-body">
+                    {% if can_request %}
+                        <!-- Can make request -->
+                        <div class="alert alert-success d-flex align-items-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div>
+                                <strong>Great news!</strong> You can request new chicks. 
+                                Your last request was over 4 months ago.
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex">
+                            <a href="{% url 'make_request' %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>
+                                Submit New Request
+                            </a>
+                        </div>
+                    {% else %}
+                        <!-- Cannot make request yet -->
+                        <div class="alert alert-warning d-flex align-items-center">
+                            <i class="fas fa-clock me-2"></i>
+                            <div>
+                                <strong>Please wait!</strong> You can only request chicks once every 4 months. 
+                                Your next eligible date is <strong>{{ next_request_date|date:"F d, Y"|default:"Not available" }}</strong>.
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex">
+                            <button class="btn btn-secondary btn-lg" disabled>
+                                <i class="fas fa-clock me-2"></i>
+                                Next Request: {{ next_request_date|date:"M d"|default:"TBD" }}
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Request History Section -->
+            <div class="content-section">
+                <div class="section-header info-header">
+                    <h5>
+                        <i class="fas fa-history me-2"></i>
+                        Request History
+                    </h5>
+                </div>
+                <div class="section-body p-0">
+                    {% if requests %}
+                        <!-- Requests table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Chick Type</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in requests %}
+                                    <tr>
+                                        <td>
+                                            <small class="text-muted">{{ request.created_at|date:"M d, Y" }}</small>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <span class="badge 
+                                                    {% if request.chick_type == 'layer' %}bg-primary
+                                                    {% else %}bg-info
+                                                    {% endif %}">
+                                                    {{ request.get_chick_type_display }}
+                                                </span>
+                                                <br>
+                                                <small class="text-muted">{{ request.get_breed_type_display }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <strong>{{ request.quantity }}</strong> 
+                                            <small class="text-muted">chicks</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if request.status == 'pending' %}bg-warning text-dark
+                                                {% elif request.status == 'approved' %}bg-success
+                                                {% elif request.status == 'sold' %}bg-info
+                                                {% else %}bg-danger
+                                                {% endif %}">
+                                                {{ request.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    onclick="showRequestDetails('{{ request.id }}')"
+                                                    data-bs-toggle="tooltip" 
+                                                    title="View request details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <!-- No requests yet -->
+                        <div class="text-center py-5">
+                            <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No requests yet</h6>
+                            <p class="text-muted mb-3">Submit your first chick request to get started.</p>
+                            {% if can_request %}
+                                <a href="{% url 'make_request' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Make Your First Request
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Profile & Guidelines -->
+        <div class="col-lg-4">
+            
+            <!-- Profile Information -->
+            <div class="content-section mb-4">
+                <div class="section-header success-header">
+                    <h5>
+                        <i class="fas fa-user me-2"></i>
+                        Profile Information
+                    </h5>
+                </div>
+                <div class="section-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-circle fa-2x text-muted me-3"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ user.get_full_name|default:user.username }}</h6>
+                                    <small class="text-muted">Farmer</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <hr class="my-2">
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Email:</small>
+                            <div class="fw-medium">{{ user.email|default:"Not provided" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Phone:</small>
+                            <div class="fw-medium">{{ user.userprofile.contact|default:"Not provided" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Age:</small>
+                            <div class="fw-medium">{{ user.userprofile.age|default:"Not provided" }} years</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Experience:</small>
+                            <div class="fw-medium">{{ user.userprofile.experience|default:"Beginner" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'edit_profile' %}" class="btn btn-outline-success">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guidelines Section -->
+            <div class="content-section">
+                <div class="section-header warning-header">
+                    <h5>
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Important Guidelines
+                    </h5>
+                </div>
+                <div class="section-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex align-items-start border-0 px-0">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <strong>Request Frequency:</strong><br>
+                                <small class="text-muted">Once every 4 months maximum</small>
+                            </div>
+                        </div>
+                        
+                        <div class="list-group-item d-flex align-items-start border-0 px-0">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <strong>Starter Limit:</strong><br>
+                                <small class="text-muted">Maximum 100 chicks for new farmers</small>
+                            </div>
+                        </div>
+                        
+                        <div class="list-group-item d-flex align-items-start border-0 px-0">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <strong>Experienced Limit:</strong><br>
+                                <small class="text-muted">Maximum 500 chicks for returning farmers</small>
+                            </div>
+                        </div>
+                        
+                        <div class="list-group-item d-flex align-items-start border-0 px-0">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <strong>Fixed Price:</strong><br>
+                                <small class="text-muted">UGx 1,650 per chick (all breeds)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Simple Modal for junior developers -->
+<div id="requestDetailsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: relative; margin: 5% auto; width: 80%; max-width: 600px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <div style="padding: 20px; border-bottom: 1px solid #ddd; background: #f8f9fa; border-radius: 8px 8px 0 0;">
+            <h5 style="margin: 0; color: #333;">
+                Request Details
+            </h5>
+            <button type="button" onclick="closeModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">
+                ×
+            </button>
+        </div>
+        <div id="modalBodyContent" style="padding: 20px;">
+            <!-- Content will be loaded here -->
+            <div style="text-align: center; padding: 20px;">
+                <p style="color: #666;">Loading request details...</p>
+            </div>
+        </div>
+        <div style="padding: 20px; border-top: 1px solid #ddd; background: #f8f9fa; border-radius: 0 0 8px 8px; text-align: right;">
+            <button type="button" onclick="closeModal()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* Enhanced JavaScript with AJAX for farmer dashboard */
+
+// Utility functions
+function getStatusColor(status) {
+    switch(status) {
+        case 'pending': return 'warning';
+        case 'approved': return 'success';
+        case 'sold': return 'info';
+        case 'rejected': return 'danger';
+        default: return 'secondary';
+    }
+}
+
+function showMessage(message, type) {
+    // Create a simple alert div
+    var alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show position-fixed';
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.style.minWidth = '300px';
+    alertDiv.innerHTML = message + '<button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>';
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(function() {
+        if (alertDiv.parentElement) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+function ajaxGet(url, callback) {
+    // Simple AJAX GET function
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    callback(null, data);
+                } catch (e) {
+                    callback('Invalid JSON response', null);
+                }
+            } else {
+                callback('HTTP Error: ' + xhr.status, null);
+            }
+        }
+    };
+    xhr.send();
+}
+
+// Initialize farmer dashboard
+window.onload = function() {
+    console.log('Farmer dashboard loaded successfully!');
+    initializeFarmerDashboard();
+    
+    /* Add click event to modal close */
+    window.onclick = function(event) {
+        var modal = document.getElementById('requestDetailsModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    };
+};
+
+// Initialize dashboard with AJAX features
+function initializeFarmerDashboard() {
+    // Start auto-refresh for request status
+    startRequestStatusRefresh();
+    
+    // Add click handlers for AJAX actions
+    addAjaxClickHandlers();
+}
+
+// Auto-refresh request statuses every 60 seconds
+function startRequestStatusRefresh() {
+    setInterval(function() {
+        refreshRequestStatuses();
+    }, 60000); // 1 minute
+}
+
+// Refresh all request statuses
+function refreshRequestStatuses() {
+    var statusElements = document.querySelectorAll('[data-request-id]');
+    
+    for (var i = 0; i < statusElements.length; i++) {
+        var element = statusElements[i];
+        var requestId = element.getAttribute('data-request-id');
+        checkRequestStatusAjax(requestId);
+    }
+}
+
+// Check individual request status via AJAX
+function checkRequestStatusAjax(requestId) {
+    ajaxGet('/api/request-status/' + requestId + '/', function(error, data) {
+        if (!error && data) {
+            updateRequestStatusDisplay(requestId, data);
+        }
+    });
+}
+
+// Update request status in the UI
+function updateRequestStatusDisplay(requestId, data) {
+    var statusElement = document.querySelector('[data-request-id="' + requestId + '"]');
+    if (statusElement) {
+        statusElement.textContent = data.status_display;
+        statusElement.className = 'badge bg-' + getStatusColor(data.status);
+        
+        // Show notification if status changed
+        var currentStatus = statusElement.getAttribute('data-current-status');
+        if (currentStatus && currentStatus !== data.status) {
+            showMessage('Request #' + requestId + ' status updated to: ' + data.status_display, 'info');
+            statusElement.setAttribute('data-current-status', data.status);
+        }
+    }
+}
+
+// Add click handlers for AJAX actions
+function addAjaxClickHandlers() {
+    // Add handler for request refresh button
+    var refreshButton = document.getElementById('refresh-requests');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            refreshRequestStatuses();
+            showMessage('Request statuses refreshed!', 'success');
+        });
+    }
+}
+
+// Show request details with AJAX loading
+function showRequestDetails(requestId) {
+    var modal = document.getElementById('requestDetailsModal');
+    var modalContent = document.getElementById('modalBodyContent');
+    
+    // Show modal immediately
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    
+    // Show loading message
+    modalContent.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin fa-2x text-primary mb-3"></i><p>Loading request details...</p></div>';
+    
+    // Load real data via AJAX (for now, show static content since we don't have the API endpoint yet)
+    setTimeout(function() {
+        modalContent.innerHTML = 
+            '<div class="info-box">' +
+                '<div style="padding: 20px;">' +
+                    '<div style="margin-bottom: 20px;">' +
+                        '<h6 style="color: #666; margin-bottom: 10px;"><i class="fas fa-info-circle me-2"></i>Request Information</h6>' +
+                        '<p><strong>Request ID:</strong> #' + requestId + '</p>' +
+                        '<p><strong>Status:</strong> <span class="badge bg-warning text-dark">Pending</span></p>' +
+                        '<p><strong>Submitted:</strong> ' + new Date().toLocaleDateString() + '</p>' +
+                    '</div>' +
+                    '<div style="margin-bottom: 20px;">' +
+                        '<h6 style="color: #666; margin-bottom: 10px;"><i class="fas fa-egg me-2"></i>Request Details</h6>' +
+                        '<p><strong>Chick Type:</strong> Layer</p>' +
+                        '<p><strong>Breed:</strong> Local</p>' +
+                        '<p><strong>Quantity:</strong> 50 chicks</p>' +
+                        '<p><strong>Farmer Type:</strong> Starter</p>' +
+                    '</div>' +
+                    '<div style="border-top: 1px solid #ddd; padding-top: 15px;">' +
+                        '<button onclick="closeModal()" class="btn btn-secondary">Close</button>' +
+                        '<button onclick="refreshRequestStatuses()" class="btn btn-primary ms-2"><i class="fas fa-sync me-1"></i>Refresh Status</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    }, 500); // Simulate loading delay
+}
+
+// Simple function to close modal
+function closeModal() {
+    var modal = document.getElementById('requestDetailsModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+}
+
+// Manual refresh of dashboard stats
+function refreshDashboardStats() {
+    ajaxGet('/api/dashboard-stats/', function(error, data) {
+        if (!error && data) {
+            updateFarmerStats(data);
+            showMessage('Dashboard statistics updated!', 'success');
+        } else {
+            showMessage('Error updating statistics: ' + (error || 'Unknown error'), 'danger');
+        }
+    });
+}
+
+// Update farmer-specific statistics
+function updateFarmerStats(data) {
+    if (data.my_pending_requests !== undefined) {
+        var element = document.querySelector('.stats-box.warning .stats-number');
+        if (element) element.textContent = data.my_pending_requests;
+    }
+    
+    if (data.my_approved_requests !== undefined) {
+        var element = document.querySelector('.stats-box.success .stats-number');
+        if (element) element.textContent = data.my_approved_requests;
+    }
+    
+    if (data.my_completed_sales !== undefined) {
+        var element = document.querySelectorAll('.stats-box.info .stats-number')[0];
+        if (element) element.textContent = data.my_completed_sales;
+    }
+    
+    if (data.my_total_requests !== undefined) {
+        var element = document.querySelectorAll('.stats-box.info .stats-number')[1];
+        if (element) element.textContent = data.my_total_requests;
+    }
+}
+
+/* Simple example functions for education */
+function validateRequest() {
+    console.log('Validating request form...');
+    return true;
+}
+
+function refreshDashboard() {
+    console.log('Refreshing dashboard data...');
+}
+</script>
+{% endblock %}
