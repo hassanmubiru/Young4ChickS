@@ -2,4 +2,625 @@
 {% block title%}Home - Young4Chicks{% endblock %}
 {% block content %}
 <!--Hero Section-->
-<div class="hero-section bg-gradient-primary text-white py-5"></div>
+<div class="hero-section bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="display-3 fw-bold mb-4">
+                        🐣 Welcome to <span class="text-warning">Xchicks</span>
+                    </h1>
+                    <p class="lead mb-4 fs-5">
+                        Empowering young urban dwellers (18-30 years) to build wealth through modern poultry farming.
+                    </p>
+                    <div class="hero-actions">
+                        {% if not user.is_authenticated %}
+                            <a class="btn btn-warning btn-lg me-3 shadow-lg" href="{% url 'register_farmer' %}" role="button">
+                                <i class="fas fa-user-plus me-2"></i> Join as Young Farmer
+                            </a>
+                            <a class="btn btn-outline-light btn-lg shadow" href="{% url 'login' %}" role="button">
+                                <i class="fas fa-sign-in-alt me-2"></i> Login
+                            </a>
+                        {% else %}
+                            <a class="btn btn-warning btn-lg shadow-lg" href="{% url 'dashboard' %}" role="button">
+                                <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="hero-emoji" style="font-size: 10rem; animation: bounce 2s infinite;">
+                    🐣
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stats-box success">
+                <div class="stats-content text-center">
+                    <div class="stats-icon-large">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-number">{{ total_farmers }}+</div>
+                    <div class="stats-label">Young Farmers</div>
+                    <div class="stats-description">Registered members building their futures</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box warning">
+                <div class="stats-content text-center">
+                    <div class="stats-icon-large">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stats-number">{{ pending_requests }}</div>
+                    <div class="stats-label">Pending Requests</div>
+                    <div class="stats-description">Requests awaiting approval</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box info">
+                <div class="stats-content text-center">
+                    <div class="stats-icon-large">
+                        <i class="fas fa-egg"></i>
+                    </div>
+                    <div class="stats-number">{{ total_stock }}+</div>
+                    <div class="stats-label">Healthy Chicks</div>
+      {% extends 'poultry/base.html' %}
+
+{% block title %}Home - Xchicks{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="display-3 fw-bold mb-4">
+                        🐣 Welcome to <span class="text-warning">Xchicks</span>
+                    </h1>
+                    <p class="lead mb-4 fs-5">
+                        Empowering young urban dwellers (18-30 years) to build wealth through modern poultry farming.
+                    </p>
+                    <div class="hero-actions">
+                        {% if not user.is_authenticated %}
+                            <a class="btn btn-warning btn-lg me-3 shadow-lg" href="{% url 'register_farmer' %}" role="button">
+                                <i class="fas fa-user-plus me-2"></i> Join as Young Farmer
+                            </a>
+                            <a class="btn btn-outline-light btn-lg shadow" href="{% url 'login' %}" role="button">
+                                <i class="fas fa-sign-in-alt me-2"></i> Login
+                            </a>
+                        {% else %}
+                            <a class="btn btn-warning btn-lg shadow-lg" href="{% url 'dashboard' %}" role="button">
+                                <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="hero-emoji" style="font-size: 10rem; animation: bounce 2s infinite;">
+                    🐣
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="stats-box success">
+                <div class="stats-content text-center">
+                    <div class="stats-icon-large">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-number">{{ total_farmers }}+</div>
+                    <div class="stats-label">Young Farmers</div>
+                    <div class="stats-description">Registered members building their futures</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box warning">
+                <div class="stats-content text-center">
+                    <div class="stats-icon-large">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stats-number">{{ pending_requests }}</div>
+                    <div class="stats-label">Pending Requests</div>
+                    <div class="stats-description">Requests awaiting approval</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box info">
+                <div class="stats-content text-center">
+                    <div class="stats-icon-large">
+                        <i class="fas fa-egg"></i>
+                    </div>
+                    <div class="stats-number">{{ total_stock }}+</div>
+                    <div class="stats-label">Healthy Chicks</div>
+                    <div class="stats-description">Ready for distribution</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Information Section -->
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="info-section">
+                <div class="section-header success-header">
+                    <h4 class="mb-0 text-white">
+                        <i class="fas fa-award me-2"></i>
+                        Benefits
+                    </h4>
+                </div>
+                <div class="section-body">
+                    <p class="mb-4">Xchicks empowers youth aged 18-30 years through modern poultry farming opportunities.</p>
+                    
+                    <h6 class="text-primary mb-3">What We Offer:</h6>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Layer & Broiler Chicks
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Local & Exotic Breeds
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Fixed Price: UGx 1,650 per chick
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Free Feed Support (2 bags)
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Expert Guidance & Support
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Request Limits:</strong> Starter farmers (100 chicks max) • Returning farmers (500 chicks max)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="info-section">
+                <div class="section-header primary-header">
+                    <h4 class="mb-0 text-white">
+                        <i class="fas fa-seedling me-2"></i>
+                        How It Works
+                    </h4>
+                </div>
+                <div class="section-body">
+                    <div class="process-steps">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Register</h6>
+                                <small class="text-muted">Sign up with recommender details</small>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Submit Request</h6>
+                                <small class="text-muted">Request chicks (once every 4 months)</small>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Get Approved</h6>
+                                <small class="text-muted">Manager reviews your request</small>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Collect Chicks</h6>
+                                <small class="text-muted">Sales team processes your order</small>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Start Farming</h6>
+                                <small class="text-muted">Begin your poultry journey</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if not user.is_authenticated %}
+                        <div class="text-center mt-4">
+                            <a href="{% url 'register_farmer' %}" class="btn btn-success btn-lg shadow">
+                                <i class="fas fa-rocket me-2"></i> Get Started Today
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+{% if not user.is_authenticated %}
+
+<!-- Demo Login Section -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="content-section">
+                <div class="section-header info-header">
+                    <h4 class="mb-0 text-white">
+                        <i class="fas fa-key me-2"></i>
+                        Demo Login Details
+                    </h4>
+                </div>
+                <div class="section-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Try the system with demo accounts!</strong> Use these credentials to explore different user roles.
+                    </div>
+                    
+                    <div class="row g-4">
+                        <!-- Admin Demo -->
+                        <div class="col-md-4">
+                            <div class="demo-account-box">
+                                <div class="demo-header bg-danger text-white p-3">
+                                    <i class="fas fa-user-shield me-2"></i>
+                                    <strong>System Admin</strong>
+                                </div>
+                                <div class="demo-content p-3 bg-light">
+                                    <div class="demo-credentials">
+                                        <p class="mb-2"><strong>Username:</strong> <code>admin</code></p>
+                                        <p class="mb-2"><strong>Password:</strong> <code>admin</code></p>
+                                        <small class="text-muted">Full system access & management</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Manager Demo -->
+                        <div class="col-md-4">
+                            <div class="demo-account-box">
+                                <div class="demo-header bg-primary text-white p-3">
+                                    <i class="fas fa-user-tie me-2"></i>
+                                    <strong>Brooder Manager</strong>
+                                </div>
+                                <div class="demo-content p-3 bg-light">
+                                    <div class="demo-credentials">
+                                        <p class="mb-2"><strong>Username:</strong> <code>manager</code></p>
+                                        <p class="mb-2"><strong>Password:</strong> <code>demo123</code></p>
+                                        <small class="text-muted">Approve requests & manage stock</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Farmer Demo -->
+                        <div class="col-md-4">
+                            <div class="demo-account-box">
+                                <div class="demo-header bg-success text-white p-3">
+                                    <i class="fas fa-user me-2"></i>
+                                    <strong>Young Farmer</strong>
+                                </div>
+                                <div class="demo-content p-3 bg-light">
+                                    <div class="demo-credentials">
+                                        <p class="mb-2"><strong>Username:</strong> <code>farmer</code></p>
+                                        <p class="mb-2"><strong>Password:</strong> <code>demo123</code></p>
+                                        <small class="text-muted">Make requests & track orders</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sales Rep Demo -->
+                    <div class="row g-4 mt-2">
+                        <div class="col-md-6">
+                            <div class="demo-account-box">
+                                <div class="demo-header bg-warning text-dark p-3">
+                                    <i class="fas fa-handshake me-2"></i>
+                                    <strong>Sales Representative</strong>
+                                </div>
+                                <div class="demo-content p-3 bg-light">
+                                    <div class="demo-credentials">
+                                        <p class="mb-2"><strong>Username:</strong> <code>sales</code></p>
+                                        <p class="mb-2"><strong>Password:</strong> <code>demo123</code></p>
+                                        <small class="text-muted">Process sales & complete orders</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Login Button -->
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="text-center w-100">
+                                <h5 class="mb-3">Quick Access</h5>
+                                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt me-2"></i>
+                                    Login Now
+                                </a>
+                                <p class="text-muted mt-2 small">
+                                    Copy and paste the credentials above
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="cta-section text-center">
+        <div class="content-body p-5">
+            <h2 class="display-5 fw-bold mb-4">Ready to Start Your Poultry Journey?</h2>
+            <p class="lead mb-4">Join hundreds of young entrepreneurs building wealth through poultry farming</p>
+            <div class="cta-buttons">
+                <a href="{% url 'register_farmer' %}" class="btn btn-primary btn-lg me-3 shadow-lg">
+                    <i class="fas fa-user-plus me-2"></i> Register Now
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg shadow">
+                    <i class="fas fa-sign-in-alt me-2"></i> I'm Already a Member
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+              <div class="stats-description">Ready for distribution</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Information Section -->
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="info-section">
+                <div class="section-header success-header">
+                    <h4 class="mb-0 text-white">
+                        <i class="fas fa-award me-2"></i>
+                        Benefits
+                    </h4>
+                </div>
+                <div class="section-body">
+                    <p class="mb-4">Xchicks empowers youth aged 18-30 years through modern poultry farming opportunities.</p>
+                    
+                    <h6 class="text-primary mb-3">What We Offer:</h6>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Layer & Broiler Chicks
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Local & Exotic Breeds
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Fixed Price: UGx 1,650 per chick
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Free Feed Support (2 bags)
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check text-success me-2"></i> Expert Guidance & Support
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Request Limits:</strong> Starter farmers (100 chicks max) • Returning farmers (500 chicks max)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="info-section">
+                <div class="section-header primary-header">
+                    <h4 class="mb-0 text-white">
+                        <i class="fas fa-seedling me-2"></i>
+                        How It Works
+                    </h4>
+                </div>
+                <div class="section-body">
+                    <div class="process-steps">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Register</h6>
+                                <small class="text-muted">Sign up with recommender details</small>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Submit Request</h6>
+                                <small class="text-muted">Request chicks (once every 4 months)</small>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Get Approved</h6>
+                                <small class="text-muted">Manager reviews your request</small>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Collect Chicks</h6>
+                                <small class="text-muted">Sales team processes your order</small>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h6 class="mb-1">Start Farming</h6>
+                                <small class="text-muted">Begin your poultry journey</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if not user.is_authenticated %}
+                        <div class="text-center mt-4">
+                            <a href="{% url 'register_farmer' %}" class="btn btn-success btn-lg shadow">
+                                <i class="fas fa-rocket me-2"></i> Get Started Today
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+{% if not user.is_authenticated %}
+
+<!-- Demo Login Section -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="content-section">
+                <div class="section-header info-header">
+                    <h4 class="mb-0 text-white">
+                        <i class="fas fa-key me-2"></i>
+                        Demo Login Details
+                    </h4>
+                </div>
+                <div class="section-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Try the system with demo accounts!</strong> Use these credentials to explore different user roles.
+                    </div>
+                    
+                    <div class="row g-4">
+                        <!-- Admin Demo -->
+                        <div class="col-md-4">
+                            <div class="demo-account-box">
+                                <div class="demo-header bg-danger text-white p-3">
+                                    <i class="fas fa-user-shield me-2"></i>
+                                    <strong>System Admin</strong>
+                                </div>
+                                <div class="demo-content p-3 bg-light">
+                                    <div class="demo-credentials">
+                                        <p class="mb-2"><strong>Username:</strong> <code>admin</code></p>
+                                        <p class="mb-2"><strong>Password:</strong> <code>admin</code></p>
+                                        <small class="text-muted">Full system access & management</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Manager Demo -->
+                        <div class="col-md-4">
+                            <div class="demo-account-box">
+                                <div class="demo-header bg-primary text-white p-3">
+                                    <i class="fas fa-user-tie me-2"></i>
+                                    <strong>Brooder Manager</strong>
+                                </div>
+                                <div class="demo-content p-3 bg-light">
+                                    <div class="demo-credentials">
+                                        <p class="mb-2"><strong>Username:</strong> <code>manager</code></p>
+                                        <p class="mb-2"><strong>Password:</strong> <code>demo123</code></p>
+                                        <small class="text-muted">Approve requests & manage stock</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Farmer Demo -->
+                        <div class="col-md-4">
+                            <div class="demo-account-box">
+                                <div class="demo-header bg-success text-white p-3">
+                                    <i class="fas fa-user me-2"></i>
+                                    <strong>Young Farmer</strong>
+                                </div>
+                                <div class="demo-content p-3 bg-light">
+                                    <div class="demo-credentials">
+                                        <p class="mb-2"><strong>Username:</strong> <code>farmer</code></p>
+                                        <p class="mb-2"><strong>Password:</strong> <code>demo123</code></p>
+                                        <small class="text-muted">Make requests & track orders</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sales Rep Demo -->
+                    <div class="row g-4 mt-2">
+                        <div class="col-md-6">
+                            <div class="demo-account-box">
+                                <div class="demo-header bg-warning text-dark p-3">
+                                    <i class="fas fa-handshake me-2"></i>
+                                    <strong>Sales Representative</strong>
+                                </div>
+                                <div class="demo-content p-3 bg-light">
+                                    <div class="demo-credentials">
+                                        <p class="mb-2"><strong>Username:</strong> <code>sales</code></p>
+                                        <p class="mb-2"><strong>Password:</strong> <code>demo123</code></p>
+                                        <small class="text-muted">Process sales & complete orders</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Login Button -->
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="text-center w-100">
+                                <h5 class="mb-3">Quick Access</h5>
+                                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt me-2"></i>
+                                    Login Now
+                                </a>
+                                <p class="text-muted mt-2 small">
+                                    Copy and paste the credentials above
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="cta-section text-center">
+        <div class="content-body p-5">
+            <h2 class="display-5 fw-bold mb-4">Ready to Start Your Poultry Journey?</h2>
+            <p class="lead mb-4">Join hundreds of young entrepreneurs building wealth through poultry farming</p>
+            <div class="cta-buttons">
+                <a href="{% url 'register_farmer' %}" class="btn btn-primary btn-lg me-3 shadow-lg">
+                    <i class="fas fa-user-plus me-2"></i> Register Now
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg shadow">
+                    <i class="fas fa-sign-in-alt me-2"></i> I'm Already a Member
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
