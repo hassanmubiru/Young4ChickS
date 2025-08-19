@@ -16,11 +16,22 @@
     <style>
         /*  body styling */
         body {
-            font-family: Poppins, sans-serif;
-            background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 50%, #ecf0f1 100%);
             margin: 0;
             padding: 0;
+            min-height: 100vh;
         }
+        
+        /* Main content background */
+        main.container-fluid {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
 
         /* Form styling */
         .auth-form {
