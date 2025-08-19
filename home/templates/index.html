@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Young4Chicks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-1CmrxMRARb6aLqgBO7fN4pP4p6d3z5e5l5l5l5l5l5l5l5l5l5l5l5l5l5l5"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /*  body styling */
+        body {
+            font-family: Poppins, sans-serif;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Form styling */
+        .auth-form {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .form-content {
+            background: #e9ecef;
+            padding: 20px;
+            border: 1px solid #ced4da;
+        }
+
+        /* Content sections */
+        .content-section {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            background: #e9ecef;
+            padding: 15px;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: bold;
+        }
+
+        .section-header.warning-header {
+            background: orange;
+            color: white;
+        }
+
+        .section-header.info-header {
+            background: lightblue;
+            color: white;
+        }
+
+        .section-header.success-header {
+            background: green;
+            color: white;
+        }
+
+        .section-header.primary-header {
+            background: blue;
+            color: white;
+        }
+
+        .section-header h5 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .section-body {
+            padding: 15px;
+            background: #f1f3f4;
+        }
+
+        .section-body.p-0 {
+            padding: 0;
+            background: #f8f9fa;
+        }
+
+        /* Stats boxes */
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stats-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border: 3px solid #ccc;
+            width: 200px;
+            text-align: center;
+        }
+
+        .stats-box.warning {
+            border-color: orange;
+            background-color: #fff8e1;
+        }
+
+        .stats-box.success {
+            border-color: green;
+            background-color: #f0f8f0;
+        }
+
+        .stats-box.info {
+            border-color: blue;
+            background-color: #f0f8ff;
+        }
+
+        .stats-box.primary {
+            border-color: purple;
+            background-color: #f5f0ff;
+        }
+
+        .stats-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .stats-box.warning .stats-number {
+            color: orange;
+        }
+
+        .stats-box.success .stats-number {
+            color: green;
+        }
+
+        .stats-box.info .stats-number {
+            color: blue;
+        }
+
+        .stats-box.primary .stats-number {
+            color: purple;
+        }
+
+        .stats-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stats-description {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .stats-icon-large {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .stats-box.warning .stats-icon-large {
+            color: orange;
+        }
+
+        .stats-box.success .stats-icon-large {
+            color: green;
+        }
+
+        .stats-box.info .stats-icon-large {
+            color: blue;
+        }
+
+        .stats-content {
+            padding: 5px;
+        }
+
+        /* Table styling */
+        .table {
+            width: 100%;
+            border: 1px solid #dee2e6;
+        }
+
+        .table th {
+            background-color: #e9ecef;
+            padding: 12px;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: bold;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table tr:hover {
+            background-color: #f1f3f4;
+        }
+
+        .table-container {
+            border: 1px solid #dee2e6;
+        }
+
+        /* Utility classes */
+        .empty-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .info-box {
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .stats-row {
+                display: block;
+            }
+
+            .stats-box {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <!---Navigation bar-->
+     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #0875d4 0%, #061b30 100%);">
+        <div class="container">
+            <!-- Brand -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-egg me-2"></i>
+                Young4Chicks
+            </a>
+            
+            <!-- Mobile menu toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Navigation items -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <i class="fas fa-dashboard me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <!-- User menu -->
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i>
+                            {{ user.get_full_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register_farmer' %}">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!--End Navigation bar-->
+     <!-- Main content area -->
+    <main class="container-fluid py-4 flex-grow-1">
+        <!-- Alert messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas 
+                       {% if message.tags == 'success' %}fa-check-circle
+                       {% elif message.tags == 'warning' %}fa-exclamation-triangle
+                       {% elif message.tags == 'error' or message.tags == 'danger' %}fa-times-circle
+                       {% else %}fa-info-circle
+                       {% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <!-- Page content -->
+        {% block content %}
+        {% endblock %}
+    </main>
+    <!--End Main content area-->
+
+     <!-- Footer -->
+    <footer class="py-4 mt-auto" style="background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%); border-top: 1px solid #ced4da;">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">
+                        &copy; 2025 Xchicks Poultry Management System. 
+                        <span class="text-warning">Empowering Young Urban Farmers.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!--End Footer-->
+
+    <script>
+        window.onload = function(){
+            hideAlerts();
+            initializeAjax();
+        };
+
+        function hideAlerts() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                }, 5000);
+            });
+        }
+        function initializeAjax() {
+            window.csrfToken = getCsrfToken();
+            if(window.location.pathname === '/dashboard/') {
+                startAutoRefresh();
+                initializeDashboardAjax();
+            }
+            
+        }
+        function getCsrfToken() {
+            const cookieValue = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+            return cookieValue ? cookieValue.split('=')[1] : '';
+        }
+        function ajaxGet(url, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('X-CSRFToken', window.csrfToken);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            var data = JSON.parse(xhr.responseText);
+                            callback(null, data);
+                        } catch (e) {
+                            callback('Invalid JSON response', null);
+                        }
+                    } else {
+                        callback('Request failed with status: ' + xhr.status, null);
+                    }
+                }
+            };
+            xhr.send();
+        }
+        function ajaxPost(url, data, callback) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('X-CSRFToken', window.csrfToken);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            var responseData = JSON.parse(xhr.responseText);
+                            callback(null, responseData);
+                        } catch (e) {
+                            callback('Invalid JSON response', null);
+                        }
+                    } else {
+                        callback('Request failed with status: ' + xhr.status, null);
+                    }
+                }
+            };
+            xhr.send(JSON.stringify(data));
+        }
+        function startAutoRefresh() {
+            setInterval(function() {
+               refreshDashboardStats();
+            }, 30000);
+        }
+        function refreshDashboardStats() {
+            var statsElements = document.querySelectorAll('.stats-number');
+            if (statsElements.length === 0) {
+                ajaxGet('/api/dashboard-stats/', function(error, data) {
+                if (!error && data) {
+                    updateDashboardStats(data);
+                }
+            });
+            }
+        }
+        function updateStatsDisplay(data) {
+           if (data.pending_requests !== undefined) {
+               var pendingElement = document.querySelector('.stats-number .stats-box.warning');
+               if (pendingElement) {
+                   pendingElement.textContent = data.pending_requests;
+               }
+           }
+           if (data.total_farmers !== undefined) {
+               var farmersElement = document.querySelector('.stats-number .stats-box.success');
+               if (farmersElement) {
+                   farmersElement.textContent = data.total_farmers + '+';
+               }
+           }
+        }
+        function checkRequestStatus() {
+            ajaxGet('/api/request-status/' + requestId + '/', function(error, data) {
+                if (!error && data) {
+                    updateRequestStatus(requestId, data);
+                }
+            });
+        }
+        function updateRequestStatus(requestId, data) {
+            var statusElement = document.getElementById('status-' + requestId);
+            if (statusElement) {
+                statusElement.textContent = data.status_display;
+                statusElement.className = 'badge bg-' + getStatusColor(data.status);
+            }
+        }
+        function getStatusColor(status) {
+            switch (status) {
+                case 'pending':
+                    return 'warning';
+                case 'approved':
+                    return 'success';
+                case 'rejected':
+                    return 'danger';
+                default:
+                    return 'secondary';
+            }
+        }
+        function submitFormAjax(formId,successCallback){
+            var form = document.getElementById(formId);
+            if(!form) return;
+            var formData = new FormData(form);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', form.action, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('X-CSRFToken', window.csrfToken);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if(response.success){
+                                showMessage('Success', response.message, 'success');
+                                if(successCallback) successCallback( response);
+                            } else{
+                                showMessage('Error', response.message, 'danger');
+                            }
+                        } catch (e) {
+                            showMessage('Form submitted successfully','success');
+                            if(successCallback) successCallback( {});
+                        }
+                    } else {
+                        showMessage('Request failed. Please try again later.', 'danger');
+                    }
+                }
+            };
+            xhr.send(formData);
+        }
+        // show messages to user
+        function showMessage(message,type){
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
+            alertDiv.innerHTML = '<i class="fas fa-info-circle me-2"></i> ' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+
+            var main = document.querySelector('main');
+            if (main) {
+                main.insertBefore(alertDiv, main.firstChild);
+            
+            setTimeout(function(){
+                if(alertDiv.parentNode){
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+        }
+        function loadContent(url,elementId){
+            ajaxGet(url, function(error, data) {
+                if (!error && data) {
+                    var element = document.getElementById(elementId);
+                    if (element && !error) {
+                        element.innerHTML = data.html || data;
+                    }
+                } 
+            });
+        }
+    </script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+
+</html>
